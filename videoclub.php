@@ -37,7 +37,7 @@ $estilo = "style=width:50px;height:70px;";
     // El programa saltará a la sección del switch indicada por la variable "action"
     switch ($action) {
 
-        // --------------------------------- MOSTRAR LISTA DE LIBROS ----------------------------------------
+        // --------------------------------- MOSTRAR LISTA DE PELÍCULAS ----------------------------------------
 
         case "mostrarListaPeliculas":
             echo "<h1>Películas y Actores</h1>";
@@ -60,7 +60,7 @@ $estilo = "style=width:50px;height:70px;";
                                 <input type='submit' value='Buscar'>
                                 </form><br>";
 
-                    // Ahora, la tabla con los datos de los libros
+                    // Ahora, la tabla con los datos de las películas
                     echo "<table border ='1'>";
                     echo "<tr>
                         <th>ID_Película</th>
@@ -107,7 +107,7 @@ $estilo = "style=width:50px;height:70px;";
                 // La consulta ha fallado
                 echo "Error al tratar de recuperar los datos de la base de datos. Por favor, inténtelo más tarde";
             }
-            echo "<p><a href='index.php?action=formularioInsertarPeliculas'>Nuevo</a></p>";
+            echo "<p><a href='videoclub.php?action=formularioInsertarPeliculas'>Nuevo</a></p>";
             break;
 
 
@@ -138,22 +138,22 @@ $estilo = "style=width:50px;height:70px;";
             $textoBusqueda = $_REQUEST["textoBusqueda"];
             echo "<h1>Resultados de la búsqueda: \"$textoBusqueda\"</h1>";
 
-            // Buscamos los libros de la biblioteca que coincidan con el texto de búsqueda
-            if ($result = $db->query("SELECT * FROM libros
-					INNER JOIN escriben ON libros.idLibro = escriben.idLibro
-					INNER JOIN personas ON escriben.idPersona = personas.idPersona
-					WHERE libros.titulo LIKE '%$textoBusqueda%'
-					OR libros.genero LIKE '%$textoBusqueda%'
+            // Buscamos los peliculas de la biblioteca que coincidan con el texto de búsqueda
+            if ($result = $db->query("SELECT * FROM peliculas
+					INNER JOIN actuan ON peliculas.idPelicula = actuan.idPelicula
+					INNER JOIN personas ON actuan.idPersona = personas.idPersona
+					WHERE peliculas.titulo LIKE '%$textoBusqueda%'
+					OR peliculas.genero LIKE '%$textoBusqueda%'
 					OR personas.nombre LIKE '%$textoBusqueda%'
 					OR personas.apellido LIKE '%$textoBusqueda%'
-					ORDER BY libros.titulo")) {
+					ORDER BY peliculas.titulo")) {
 
                 // La consulta se ha ejecutado con éxito. Vamos a ver si contiene registros
                 if ($result->num_rows != 0) {
                     // La consulta ha devuelto registros: vamos a mostrarlos
                     // Primero, el formulario de búsqueda
-                    echo "<form action='index.php'>
-								<input type='hidden' name='action' value='buscarLibros'>
+                    echo "<form action='videoclub.php'>
+								<input type='hidden' name='action' value='buscarPeliculas'>
                             	<input type='text' name='textoBusqueda'>
 								<input type='submit' value='Buscar'>
                           </form><br>";
@@ -166,8 +166,8 @@ $estilo = "style=width:50px;height:70px;";
                         echo "<td>" . $fila->numPaginas . "</td>";
                         echo "<td>" . $fila->nombre . "</td>";
                         echo "<td>" . $fila->apellido . "</td>";
-                        echo "<td><a href='index.php?action=formularioModificarPelicula&idPelicula=" . $fila->idLibro . "'>Modificar</a></td>";
-                        echo "<td><a href='index.php?action=borrarPelicula&idPelicula=" . $fila->idLibro . "'>Borrar</a></td>";
+                        echo "<td><a href='videoclub.php?action=formularioModificarPelicula&idPelicula=" . $fila->idPelicula . "'>Modificar</a></td>";
+                        echo "<td><a href='videoclub.php?action=borrarPelicula&idPelicula=" . $fila->idPelicula . "'>Borrar</a></td>";
                         echo "</tr>";
                     }
                     echo "</table>";
@@ -179,114 +179,170 @@ $estilo = "style=width:50px;height:70px;";
                 // La consulta ha fallado
                 echo "Error al tratar de recuperar los datos de la base de datos. Por favor, inténtelo más tarde";
             }
-            echo "<p><a href='index.php?action=formularioInsertarPeliculas'>Nuevo</a></p>";
-            echo "<p><a href='index.php'>Volver</a></p>";
+            echo "<p><a href='videoclub.php?action=formularioInsertarPeliculas'>Nuevo</a></p>";
+            echo "<p><a href='videoclub.php'>Volver</a></p>";
             break;
 
-            // --------------------------------- FORMULARIO ALTA DE PELICULAS ----------------------------------------
+            // --------------------------------- FORMULARIO ALTA DE PELÍCULAS ----------------------------------------
 
-        case "formularioInsertarPelícuas":
-            echo "<h1>Modificación de Películas</h1>";
+        case "formularioInsertarPeliculas":
+            echo "<h1>Insertar Películas</h1>";
 
-            // Creamos el formulario con los campos del libro
-            echo "<form action = 'index.php' method = 'get'>
+            // Creamos el formulario con los campos de la película
+            echo "<form action = 'videoclub.php' method = 'get'>
                     Título:<input type='text' name='titulo'><br>
                     Género:<input type='text' name='genero'><br>
                     País:<input type='text' name='pais'><br>
-                    Año:<input type='text' name='ano'><br>
-                    Número de páginas:<input type='text' name='numPaginas'><br>";
+                    Año:<input type='text' name='anyo'><br>
+                    Cartel:<input type='text' name='cartel'><br>";
 
-            // Añadimos un selector para el id del autor o autores
+            // Añadimos un selector para el id de actores
             $result = $db->query("SELECT * FROM personas");
-            echo "Autores: <select name='autor[]' multiple='true'>";
+            echo "Películas: <select name='titulo[]' multiple='true'>";
             while ($fila = $result->fetch_object()) {
-                echo "<option value='" . $fila->idPersona . "'>" . $fila->nombre . " " . $fila->apellido . "</option>";
+                echo "<option value='" . $fila->idPersona . "'>" . $fila->nombre . "</option>";
             }
             echo "</select>";
-            echo "<a href='index.php?action=formularioInsertarAutores'>Añadir nuevo</a><br>";
+            echo "<a href='videoclub.php?action=formularioInsertarActores'>Añadir nuevo</a><br>";
 
             // Finalizamos el formulario
-            echo "  <input type='hidden' name='action' value='insertarLibro'>
+            echo "  <input type='hidden' name='action' value='insertarPelicula'>
 					<input type='submit'>
 				</form>";
-            echo "<p><a href='index.php'>Volver</a></p>";
+            echo "<p><a href='videoclub.php'>Volver</a></p>";
 
             break;
 
-            // --------------------------------- INSERTAR LIBROS ----------------------------------------
+            // --------------------------------- INSERTAR PELÍCULAS ----------------------------------------
 
-        case "insertarLibro":
-            echo "<h1>Alta de libros</h1>";
+        case "insertarPelicula":
+            echo "<h1>Alta de Películas</h1>";
 
-            // Vamos a procesar el formulario de alta de libros
+            // Vamos a procesar el formulario de alta de películas
             // Primero, recuperamos todos los datos del formulario
             $titulo = $_REQUEST["titulo"];
             $genero = $_REQUEST["genero"];
             $pais = $_REQUEST["pais"];
-            $ano = $_REQUEST["ano"];
-            $numPaginas = $_REQUEST["numPaginas"];
-            $autores = $_REQUEST["autor"];
+            $anyo = $_REQUEST["anyo"];
+            $cartel = $_REQUEST["cartel"];
+
+            $personas = $_REQUEST["nombre"];
 
             // Lanzamos el INSERT contra la BD.
-            echo "INSERT INTO libros (titulo,genero,pais,ano,numPaginas) VALUES ('$titulo','$genero', '$pais', '$ano', '$numPaginas')";
-            $db->query("INSERT INTO libros (titulo,genero,pais,ano,numPaginas) VALUES ('$titulo','$genero', '$pais', '$ano', '$numPaginas')");
+            echo "INSERT INTO peliculas (titulo,genero,pais,anyo,cartel) VALUES ('$titulo','$genero', '$pais', '$anyo', '$cartel')";
+            $db->query("INSERT INTO peliculas (titulo,genero,pais,anyo,cartel) VALUES ('$titulo','$genero', '$pais', '$anyo', '$cartel')");
             if ($db->affected_rows == 1) {
-                // Si la inserción del libro ha funcionado, continuamos insertando en la tabla "escriben"
-                // Tenemos que averiguar qué idLibro se ha asignado al libro que acabamos de insertar
-                $result = $db->query("SELECT MAX(idLibro) AS ultimoIdLibro FROM libros");
-                $idLibro = $result->fetch_object()->ultimoIdLibro;
-                // Ya podemos insertar todos los autores junto con el libro en "escriben"
-                foreach ($autores as $idAutor) {
-                    $db->query("INSERT INTO escriben(idLibro, idPersona) VALUES('$idLibro', '$idAutor')");
-                }
-                echo "Libro insertado con éxito";
+                // Si la inserción de la película ha funcionado, continuamos insertando en la tabla "escriben"
+                // Tenemos que averiguar qué idPelicula se ha asignado a la película que acabamos de insertar
+                $result = $db->query("SELECT MAX(idPelicula) AS ultimaPelicula FROM peliculas");
+                $idPelicula = $result->fetch_object()->ultimaPelicula;
+                // Ya podemos insertar todos los actores junto con la película en "actuan"
+                
+                /*
+                foreach ($personas as $idPersona) {
+                    $db->query("INSERT INTO actuan(idPelicula, idPersona) VALUES('$idPelicula', '$idPersona')");
+                }*/
+
+                echo "Película insertado con éxito";
             } else {
-                // Si la inserción del libro ha fallado, mostramos mensaje de error
-                echo "Ha ocurrido un error al insertar el libro. Por favor, inténtelo más tarde.";
+                // Si la inserción de la película ha fallado, mostramos mensaje de error
+                echo "Ha ocurrido un error al insertar la película. Por favor, inténtelo más tarde.";
             }
-            echo "<p><a href='index.php'>Volver</a></p>";
+            echo "<p><a href='videoclub.php'>Volver</a></p>";
 
             break;
 
+            // --------------------------------- FORMULARIO MODIFICAR PELÍCULAS ----------------------------------------
 
+        case "formularioModificarPelicula":
+            echo "<h1>Modificación de Películas</h1>";
 
+            // Recuperamos el id de la película que vamos a modificar y sacamos el resto de sus datos de la BD
+            $idPelicula = $_REQUEST["idPelicula"];
+            $result = $db->query("SELECT * FROM peliculas WHERE peliculas.idPelicula = '$idPelicula'");
+            $pelicula = $result->fetch_object();
 
+            // Creamos el formulario con los campos de la película
+            // y lo rellenamos con los datos que hemos recuperado de la BD
+            echo "<form action = 'videoclub.php' method = 'get'>
+				    <input type='hidden' name='idPelicula' value='$idPelicula'>
+                    Título:<input type='text' name='titulo' value='$pelicula->titulo'><br>
+                    Género:<input type='text' name='genero' value='$pelicula->genero'><br>
+                    País:<input type='text' name='pais' value='$pelicula->pais'><br>
+                    Año:<input type='text' name='anyo' value='$pelicula->anyo'><br>
+                    Número de páginas:<input type='text' name='cartel' value='$pelicula->cartel'><br>";
 
+            // Vamos a añadir un selector para el id del actor o actores.
+            // Para que salgan preseleccionados los actores de la pelicula que estamos modificando, vamos a buscar
+            // también a esos actores.
+            $todosLosActores = $db->query("SELECT * FROM personas");  // Obtener todos los actores
+            $actoresPelicula = $db->query("SELECT idPersona FROM actuan WHERE idPelicula = '$idPelicula'");// Obtener solo los actores de la película que estamos buscando
+            // Vamos a convertir esa lista de actores de la película en un array de ids de personas
+            $listaActoresPelicula = array();
+            while ($personas = $actoresPelicula->fetch_object()) {
+                $listaActoresPelicula[] = $personas->idPersona;
+            }
 
+            // Ya tenemos todos los datos para añadir el selector de actores al formulario
+            echo "Actores: <select name='actor[]' multiple size='3'>";
+            while ($fila = $todosLosActores->fetch_object()) {
+                if (in_array($fila->idPersona, $listaActoresPelicula))
+                    echo "<option value='$fila->idPersona' selected>$fila->nombre $fila->apellido</option>";
+                else
+                    echo "<option value='$fila->idPersona'>$fila->nombre $fila->apellido</option>";
+            }
+            echo "</select>";
 
+            // Por último, un enlace para crear un nuevo actor
+            echo "<a href='videoclub.php?action=formularioInsertarActores'>Añadir nuevo</a><br>";
 
+            // Finalizamos el formulario
+            echo "  <input type='hidden' name='action' value='modificarPelicula'>
+                    <input type='submit'>
+                  </form>";
+            echo "<p><a href='videoclub.php'>Volver</a></p>";
 
+            break;
 
+            // --------------------------------- MODIFICAR PELÍCULA ----------------------------------------
 
+        case "modificarPelicula":
+            echo "<h1>Modificación de Películas</h1>";
 
+            // Vamos a procesar el formulario de modificación de las películas
+            // Primero, recuperamos todos los datos del formulario
+            $idPelicula = $_REQUEST["idPelicula"];
+            $titulo = $_REQUEST["titulo"];
+            $genero = $_REQUEST["genero"];
+            $pais = $_REQUEST["pais"];
+            $anyo = $_REQUEST["anyo"];
+            $cartel = $_REQUEST["cartel"];
+            $nombre = $_REQUEST["nombre"];
 
+            // Lanzamos el UPDATE contra la base de datos.
+            $db->query("UPDATE peliculas SET
+							titulo = '$titulo',
+							genero = '$genero',
+							pais = '$pais',
+							anyo = '$anyo',
+							cartel = '$cartel'
+							WHERE idPelicula = '$idPelicula'");
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            if ($db->affected_rows == 1) {
+                // Si la modificación dela película ha funcionado, continuamos actualizando la tabla "escriben".
+                // Primero borraremos todos los registros de la película actual y luego los insertaremos de nuevo
+                $db->query("DELETE FROM escriben WHERE idPelicula = '$idPelicula'");
+                // Ya podemos insertar todos los actores junto con la película en "actuan"
+                foreach ($personas as $idPersona) {
+                    $db->query("INSERT INTO actuan(idPelicula, idPersona) VALUES('$idPelicula', '$idPersona')");
+                }
+                echo "Película actualizada con éxito";
+            } else {
+                // Si la modificación de la película ha fallado, mostramos mensaje de error
+                echo "Ha ocurrido un error al modificar la película. Por favor, inténtelo más tarde.";
+            }
+            echo "<p><a href='videoclub.php'>Volver</a></p>";
+            break;
 
 
 
@@ -297,7 +353,7 @@ $estilo = "style=width:50px;height:70px;";
 
         default:
         echo "<h1>Error 404: página no encontrada</h1>";
-        echo "<a href='index.php'>Volver</a>";
+        echo "<a href='videoclub.php'>Volver</a>";
         break;
     } // switch
 
