@@ -145,7 +145,7 @@ $estilo = "style=width:50px;height:70px;";
 					WHERE peliculas.titulo LIKE '%$textoBusqueda%'
 					OR peliculas.genero LIKE '%$textoBusqueda%'
 					OR personas.nombre LIKE '%$textoBusqueda%'
-					OR personas.apellido LIKE '%$textoBusqueda%'
+					OR personas.apellidos LIKE '%$textoBusqueda%'
 					ORDER BY peliculas.titulo")) {
 
                 // La consulta se ha ejecutado con éxito. Vamos a ver si contiene registros
@@ -163,9 +163,10 @@ $estilo = "style=width:50px;height:70px;";
                         echo "<tr>";
                         echo "<td>" . $fila->titulo . "</td>";
                         echo "<td>" . $fila->genero . "</td>";
-                        echo "<td>" . $fila->numPaginas . "</td>";
+                        //echo "<td>" . $fila->cartel . "</td>";
+                        echo "<td><img src='$ruta_Imagen_Pelicula" . $fila->cartel . "'$estilo></td>";
                         echo "<td>" . $fila->nombre . "</td>";
-                        echo "<td>" . $fila->apellido . "</td>";
+                        echo "<td>" . $fila->apellidos . "</td>";
                         echo "<td><a href='videoclub.php?action=formularioModificarPelicula&idPelicula=" . $fila->idPelicula . "'>Modificar</a></td>";
                         echo "<td><a href='videoclub.php?action=borrarPelicula&idPelicula=" . $fila->idPelicula . "'>Borrar</a></td>";
                         echo "</tr>";
@@ -317,7 +318,7 @@ $estilo = "style=width:50px;height:70px;";
             $pais = $_REQUEST["pais"];
             $anyo = $_REQUEST["anyo"];
             $cartel = $_REQUEST["cartel"];
-            $nombre = $_REQUEST["nombre"];
+            //$nombre = $_REQUEST["nombre"];
 
             // Lanzamos el UPDATE contra la base de datos.
             $db->query("UPDATE peliculas SET
@@ -333,9 +334,11 @@ $estilo = "style=width:50px;height:70px;";
                 // Primero borraremos todos los registros de la película actual y luego los insertaremos de nuevo
                 $db->query("DELETE FROM escriben WHERE idPelicula = '$idPelicula'");
                 // Ya podemos insertar todos los actores junto con la película en "actuan"
+                /*
                 foreach ($personas as $idPersona) {
                     $db->query("INSERT INTO actuan(idPelicula, idPersona) VALUES('$idPelicula', '$idPersona')");
                 }
+                */
                 echo "Película actualizada con éxito";
             } else {
                 // Si la modificación de la película ha fallado, mostramos mensaje de error
