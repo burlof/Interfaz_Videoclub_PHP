@@ -94,8 +94,8 @@ $estilo = "style=width:50px;height:70px;";
                         //echo "<td>" . $fila->fotografia . "</td>";
                         echo "<td><img src='$ruta_Imagen_Persona" . $fila->fotografia . "'$estilo></td>";
                         
-                        echo "<td><a href='videoclub.php?action=formularioModificarLibro&idPelicula=" . $fila->idPelicula . "'>Modificar</a></td>";
-                        echo "<td><a href='videoclub.php?action=borrarLibro&idPelicula=" . $fila->idPelicula . "'>Borrar</a></td>";
+                        echo "<td><a href='videoclub.php?action=formularioModificarPelicula&idPelicula=" . $fila->idPelicula . "'>Modificar</a></td>";
+                        echo "<td><a href='videoclub.php?action=borrarPelicula&idPelicula=" . $fila->idPelicula . "'>Borrar</a></td>";
                         echo "</tr>";
                     }
                     echo "</table>";
@@ -107,7 +107,7 @@ $estilo = "style=width:50px;height:70px;";
                 // La consulta ha fallado
                 echo "Error al tratar de recuperar los datos de la base de datos. Por favor, inténtelo más tarde";
             }
-            echo "<p><a href='index.php?action=formularioInsertarLibros'>Nuevo</a></p>";
+            echo "<p><a href='index.php?action=formularioInsertarPeliculas'>Nuevo</a></p>";
             break;
 
 
@@ -116,17 +116,17 @@ $estilo = "style=width:50px;height:70px;";
         case "borrarPelicula":
             echo "<h1>Borrar películas</h1>";
 
-            // Recuperamos el id del libro y lanzamos el DELETE contra la BD
+            // Recuperamos el id de la película y lanzamos el DELETE contra la BD
             $idPelicula = $_REQUEST["idPelicula"];
             $db->query("DELETE FROM peliculas WHERE idPelicula = '$idPelicula'");
 
             // Mostramos mensaje con el resultado de la operación
             if ($db->affected_rows == 0) {
-                echo "Ha ocurrido un error al borrar el libro. Por favor, inténtelo de nuevo";
+                echo "Ha ocurrido un error al borrar la película. Por favor, inténtelo de nuevo";
             } else {
-                echo "Libro borrado con éxito";
+                echo "Película borrada con éxito";
             }
-            echo "<p><a href='index.php'>Volver</a></p>";
+            echo "<p><a href='videoclub.php'>Volver</a></p>";
 
             break;
 
@@ -166,8 +166,8 @@ $estilo = "style=width:50px;height:70px;";
                         echo "<td>" . $fila->numPaginas . "</td>";
                         echo "<td>" . $fila->nombre . "</td>";
                         echo "<td>" . $fila->apellido . "</td>";
-                        echo "<td><a href='index.php?action=formularioModificarLibro&idLibro=" . $fila->idLibro . "'>Modificar</a></td>";
-                        echo "<td><a href='index.php?action=borrarLibro&idLibro=" . $fila->idLibro . "'>Borrar</a></td>";
+                        echo "<td><a href='index.php?action=formularioModificarPelicula&idPelicula=" . $fila->idLibro . "'>Modificar</a></td>";
+                        echo "<td><a href='index.php?action=borrarPelicula&idPelicula=" . $fila->idLibro . "'>Borrar</a></td>";
                         echo "</tr>";
                     }
                     echo "</table>";
@@ -179,8 +179,73 @@ $estilo = "style=width:50px;height:70px;";
                 // La consulta ha fallado
                 echo "Error al tratar de recuperar los datos de la base de datos. Por favor, inténtelo más tarde";
             }
-            echo "<p><a href='index.php?action=formularioInsertarLibros'>Nuevo</a></p>";
+            echo "<p><a href='index.php?action=formularioInsertarPeliculas'>Nuevo</a></p>";
             echo "<p><a href='index.php'>Volver</a></p>";
+            break;
+
+            // --------------------------------- FORMULARIO ALTA DE PELICULAS ----------------------------------------
+
+        case "formularioInsertarPelícuas":
+            echo "<h1>Modificación de Películas</h1>";
+
+            // Creamos el formulario con los campos del libro
+            echo "<form action = 'index.php' method = 'get'>
+                    Título:<input type='text' name='titulo'><br>
+                    Género:<input type='text' name='genero'><br>
+                    País:<input type='text' name='pais'><br>
+                    Año:<input type='text' name='ano'><br>
+                    Número de páginas:<input type='text' name='numPaginas'><br>";
+
+            // Añadimos un selector para el id del autor o autores
+            $result = $db->query("SELECT * FROM personas");
+            echo "Autores: <select name='autor[]' multiple='true'>";
+            while ($fila = $result->fetch_object()) {
+                echo "<option value='" . $fila->idPersona . "'>" . $fila->nombre . " " . $fila->apellido . "</option>";
+            }
+            echo "</select>";
+            echo "<a href='index.php?action=formularioInsertarAutores'>Añadir nuevo</a><br>";
+
+            // Finalizamos el formulario
+            echo "  <input type='hidden' name='action' value='insertarLibro'>
+					<input type='submit'>
+				</form>";
+            echo "<p><a href='index.php'>Volver</a></p>";
+
+            break;
+
+            // --------------------------------- INSERTAR LIBROS ----------------------------------------
+
+        case "insertarLibro":
+            echo "<h1>Alta de libros</h1>";
+
+            // Vamos a procesar el formulario de alta de libros
+            // Primero, recuperamos todos los datos del formulario
+            $titulo = $_REQUEST["titulo"];
+            $genero = $_REQUEST["genero"];
+            $pais = $_REQUEST["pais"];
+            $ano = $_REQUEST["ano"];
+            $numPaginas = $_REQUEST["numPaginas"];
+            $autores = $_REQUEST["autor"];
+
+            // Lanzamos el INSERT contra la BD.
+            echo "INSERT INTO libros (titulo,genero,pais,ano,numPaginas) VALUES ('$titulo','$genero', '$pais', '$ano', '$numPaginas')";
+            $db->query("INSERT INTO libros (titulo,genero,pais,ano,numPaginas) VALUES ('$titulo','$genero', '$pais', '$ano', '$numPaginas')");
+            if ($db->affected_rows == 1) {
+                // Si la inserción del libro ha funcionado, continuamos insertando en la tabla "escriben"
+                // Tenemos que averiguar qué idLibro se ha asignado al libro que acabamos de insertar
+                $result = $db->query("SELECT MAX(idLibro) AS ultimoIdLibro FROM libros");
+                $idLibro = $result->fetch_object()->ultimoIdLibro;
+                // Ya podemos insertar todos los autores junto con el libro en "escriben"
+                foreach ($autores as $idAutor) {
+                    $db->query("INSERT INTO escriben(idLibro, idPersona) VALUES('$idLibro', '$idAutor')");
+                }
+                echo "Libro insertado con éxito";
+            } else {
+                // Si la inserción del libro ha fallado, mostramos mensaje de error
+                echo "Ha ocurrido un error al insertar el libro. Por favor, inténtelo más tarde.";
+            }
+            echo "<p><a href='index.php'>Volver</a></p>";
+
             break;
 
 
