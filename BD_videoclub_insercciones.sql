@@ -1,14 +1,15 @@
 use videoclub;
 
 INSERT INTO peliculas VALUES
-(1,'Gladiator','Peplum y Accion', 'UK', 2000, '1_gladiator.jfif'),
-(2,'Marte','Ciencia Ficcion', 'EEUU', 2015, '2_marte.jpg'),
+(1,'Gladiator','Peplum y Accion', 'UK', 2000, '1_Gladiator.jfif'),
+(2,'Marte','Ciencia Ficcion', 'EEUU', 2015, '2_Marte.jpg'),
 (3,'El Codigo Da Vinci','Misterio y Suspense', 'EEUU', 2006, '3_Codigo_Da_Vinci.jpg'),
 (4,'300','Accion y Cine Epico', 'EEUU', 2007, '4_300.jpg'),
 (5,'El Medico','Aventuras', 'Germany', 2013, '5_El_Medico.jfif'),
 (6,'John Carter','Ciencia Ficcion', 'EEUU', 2012, '6_John_Carter.jfif'),
 (7,'La Cumbre Escarlata','Suspenso', 'Mexico', 2015, '7_La_Cumbre_Escarlata.jfif'),
-(8,'Regresion','Suspenso y Misterio', 'Spain', 2015, '8_Regresion.jfif');
+(8,'Regresion','Suspenso y Misterio', 'Spain', 2015, '8_Regresion.jfif'),
+(9, 'Salvar al soldado Ryan', 'Belico e Historico', 'EEUU', 1998, '9_Soldado_Ryan.jpg');
 
 INSERT INTO personas VALUES
 (1,'Russell','Crowe', '1_Russel_Crowe.jfif'),
@@ -28,7 +29,10 @@ INSERT INTO actuan VALUES
 (5,5),
 (6,6),
 (7,7),
-(8,8);
+(8,8),
+(9,2),
+(9,3);
+
 
 
 

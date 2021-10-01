@@ -43,11 +43,11 @@ $estilo = "style=width:50px;height:70px;";
             echo "<h1>Películas y Actores</h1>";
 
             // Buscamos todas las películas del videoclub
-            if ($result = $db->query("SELECT * 
-                                        FROM peliculas inner join actuan on peliculas.idPelicula = actuan.idPelicula 
-                                        inner join personas on actuan.idPersona = personas.idPersona
+            if ($result = $db->query("SELECT DISTINCT* 
+                                        FROM peliculas 
+                                        left join actuan on peliculas.idPelicula = actuan.idPelicula 
+                                        left join personas on actuan.idPersona = personas.idPersona
                                         ORDER BY peliculas.idPelicula")) {
-                                            //inner join personas on peliculas.id_Pelicula = personas.idPersona
 
                 // La consulta se ha ejecutado con éxito. Vamos a ver si contiene registros
                 if ($result->num_rows != 0) {
@@ -127,6 +127,7 @@ $estilo = "style=width:50px;height:70px;";
                 echo "Película borrada con éxito";
             }
             echo "<p><a href='videoclub.php'>Volver</a></p>";
+            
 
             break;
 
@@ -196,10 +197,11 @@ $estilo = "style=width:50px;height:70px;";
                     País:<input type='text' name='pais'><br>
                     Año:<input type='text' name='anyo'><br>
                     Cartel:<input type='text' name='cartel'><br>";
+                    
 
             // Añadimos un selector para el id de actores
             $result = $db->query("SELECT * FROM personas");
-            echo "Películas: <select name='titulo[]' multiple='true'>";
+            echo "Películas: <select name='nombre[]' multiple='true'>";
             while ($fila = $result->fetch_object()) {
                 echo "<option value='" . $fila->idPersona . "'>" . $fila->nombre . "</option>";
             }
